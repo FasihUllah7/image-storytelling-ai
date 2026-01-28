@@ -5,7 +5,7 @@
 // Configuration - Use environment variable or fallback to localhost
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'
-    : 'https://image-storytelling-ai.vercel.app/api';
+    : 'https://image-storytelling-backend.vercel.app/api';
 
 // State
 let selectedImage = null;
