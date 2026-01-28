@@ -15,7 +15,7 @@ class AnalysisPipeline:
     
     def process_image(self, image_data):
         """
-        Process image through complete pipeline.
+        Process image through complete pipeline in a single request.
         
         Args:
             image_data: File-like object, bytes, or PIL.Image
@@ -23,6 +23,9 @@ class AnalysisPipeline:
         Returns:
             dict: Analysis results with all five outputs
         """
+        import json
+        import re
+
         # Validate and preprocess
         is_valid, error = self.processor.validate_image(image_data)
         if not is_valid:
@@ -30,56 +33,39 @@ class AnalysisPipeline:
         
         image = self.processor.preprocess_image(image_data)
         
-        # Initialize results
-        results = {
-            'caption': '',
-            'summary': '',
-            'objects': '',
-            'mood': '',
-            'story': '',
-            'metadata': {
+        try:
+            # Single stage: Consolidated Analysis
+            print("Running consolidated image analysis...")
+            prompt = prompts.get_analysis_prompt()
+            response_text = self.client.analyze_with_retry(image, prompt)
+            
+            # Extract JSON from response (handling potential markdown blocks)
+            json_match = re.search(r'(\{.*\})', response_text, re.DOTALL)
+            if json_match:
+                results = json.loads(json_match.group(1))
+            else:
+                # Fallback if no JSON structure found
+                results = json.loads(response_text)
+            
+            # Ensure metadata is added
+            results['metadata'] = {
                 'image_size': image.size,
                 'image_mode': image.mode
             }
-        }
-        
-        try:
-            # Stage 1: Generate caption
-            print("Generating caption...")
-            caption_prompt = prompts.get_caption_prompt()
-            results['caption'] = self.client.analyze_with_retry(image, caption_prompt)
-            
-            # Stage 2: Generate summary
-            print("Generating summary...")
-            summary_prompt = prompts.get_summary_prompt(results['caption'])
-            results['summary'] = self.client.analyze_with_retry(image, summary_prompt)
-            
-            # Stage 3: Detect objects
-            print("Detecting objects...")
-            objects_prompt = prompts.get_objects_prompt()
-            results['objects'] = self.client.analyze_with_retry(image, objects_prompt)
-            
-            # Stage 4: Analyze mood
-            print("Analyzing mood...")
-            mood_prompt = prompts.get_mood_prompt(results['caption'], results['summary'])
-            results['mood'] = self.client.analyze_with_retry(image, mood_prompt)
-            
-            # Stage 5: Generate story
-            print("Generating story...")
-            story_prompt = prompts.get_story_prompt(
-                results['caption'],
-                results['summary'],
-                results['objects'],
-                results['mood']
-            )
-            results['story'] = self.client.analyze_with_retry(image, story_prompt)
             
             return results
             
         except Exception as e:
-            # Include partial results if available
-            results['error'] = str(e)
-            return results
+            print(f"Pipeline error: {str(e)}")
+            return {
+                'error': str(e),
+                'caption': 'Error analyzing image',
+                'summary': 'Could not generate summary due to an error.',
+                'objects': '- Error',
+                'mood': 'Error',
+                'story': 'Error'
+            }
+
     
     def process_base64_image(self, base64_string):
         """

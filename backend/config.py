@@ -12,10 +12,13 @@ load_dotenv(dotenv_path=env_path)
 class Config:
     """Application configuration."""
     
-    # API Configuration
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    # Analysis Settings
+    MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
     PORT = int(os.getenv('PORT', 5000))
     DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+    
+    # API Configuration
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
     # Image Processing
     MAX_IMAGE_SIZE_MB = 10
@@ -24,7 +27,7 @@ class Config:
     RESIZE_MAX_DIMENSION = 2048  # Max width or height
     
     # Model Configuration
-    MODEL_NAME = 'gpt-4o'  # GPT-4 Omni with vision capabilities
+
     GENERATION_CONFIG = {
         'temperature': 0.7,
         'max_tokens': 2048,
