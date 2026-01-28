@@ -2,8 +2,10 @@
  * Frontend application for Multimodal Image Understanding & Storytelling AI
  */
 
-// Configuration
-const API_BASE_URL = 'http://localhost:5000/api';
+// Configuration - Use environment variable or fallback to localhost
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://your-backend-name.vercel.app/api'; // Update this after deploying backend
 
 // State
 let selectedImage = null;

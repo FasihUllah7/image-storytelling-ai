@@ -8,7 +8,20 @@ from config import Config
 import traceback
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend
+
+# Configure CORS for both development and production
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "https://*.vercel.app",
+            "https://image-storytelling-ai.vercel.app"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Initialize pipeline
 pipeline = None
