@@ -9,19 +9,8 @@ import traceback
 
 app = Flask(__name__)
 
-# Configure CORS for both development and production
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:*",
-            "http://127.0.0.1:*",
-            "https://*.vercel.app",
-            "https://image-storytelling-ai.vercel.app"
-        ],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
+# Simplified CORS for Vercel deployment
+CORS(app) 
 
 # Initialize pipeline
 pipeline = None

@@ -243,7 +243,7 @@ elements.analyzeBtn.addEventListener('click', async () => {
 
     } catch (error) {
         console.error('Analysis error:', error);
-        showError(error.message);
+        showError(`${error.message} (Target: ${API_BASE_URL}/analyze)`);
     } finally {
         elements.loadingState.hidden = true;
     }
