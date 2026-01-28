@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Image Understanding & Storytelling AI</title>
+    <meta name="description"
+        content="AI-powered image analysis system that generates captions, summaries, object detection, mood analysis, and creative stories from your images.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <span class="gradient-text">Multimodal AI</span>
+                <span class="subtitle">Image Understanding & Storytelling</span>
+            </h1>
+            <p class="description">
+                Upload an image or capture from your camera to generate AI-powered insights:
+                captions, summaries, object detection, mood analysis, and creative stories.
+            </p>
+
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="input-tabs">
+                <button class="tab-btn active" data-tab="upload">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Upload Image
+                </button>
+                <button class="tab-btn" data-tab="camera">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                        </path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    Camera Capture
+                </button>
+            </div>
+
+            <!-- Upload Tab -->
+            <div class="tab-content active" id="upload-tab">
+                <div class="dropzone" id="dropzone">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="dropzone-text">Drag & drop an image here</p>
+                    <p class="dropzone-subtext">or</p>
+                    <button class="btn-primary" id="browse-btn">Browse Files</button>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                    <p class="file-info">Supports: JPG, PNG, WebP, GIF (Max 10MB)</p>
+                </div>
+            </div>
+
+            <!-- Camera Tab -->
+            <div class="tab-content" id="camera-tab">
+                <div class="camera-container">
+                    <video id="camera-video" autoplay playsinline></video>
+                    <canvas id="camera-canvas" hidden></canvas>
+                    <div class="camera-controls">
+                        <button class="btn-primary" id="start-camera-btn">Start Camera</button>
+                        <button class="btn-secondary" id="capture-btn" hidden>Capture Photo</button>
+                        <button class="btn-secondary" id="stop-camera-btn" hidden>Stop Camera</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Preview -->
+            <div class="image-preview" id="image-preview" hidden>
+                <div class="preview-header">
+                    <h3>Selected Image</h3>
+                    <button class="btn-icon" id="clear-image-btn" title="Clear image">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <img id="preview-img" alt="Preview">
+                <button class="btn-primary btn-analyze" id="analyze-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    Analyze Image
+                </button>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loading-state" hidden>
+            <div class="spinner"></div>
+            <p>Analyzing image with AI...</p>
+            <p class="loading-subtext">This may take 10-20 seconds</p>
+        </div>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results-section" hidden>
+            <!-- Hero Image with Caption -->
+            <div class="hero-image-container">
+                <img id="analyzed-image" class="hero-image" alt="Analyzed image">
+                <div class="image-caption-overlay">
+                    <p class="caption-text" id="result-caption"></p>
+                </div>
+            </div>
+
+            <!-- Primary Summary -->
+            <div class="primary-summary">
+                <h2 class="summary-title">Analysis</h2>
+                <p class="summary-content" id="result-summary"></p>
+            </div>
+
+            <!-- Secondary Insights Grid -->
+            <div class="insights-grid">
+                <!-- Objects -->
+                <div class="insight-card">
+                    <h3 class="insight-label">Detected Objects</h3>
+                    <div class="insight-content" id="result-objects"></div>
+                </div>
+
+                <!-- Mood -->
+                <div class="insight-card">
+                    <h3 class="insight-label">Mood & Tone</h3>
+                    <p class="insight-content" id="result-mood"></p>
+                </div>
+            </div>
+
+            <!-- Editorial Story Section -->
+            <div class="story-section">
+                <div class="story-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <h3>Creative Story</h3>
+                </div>
+                <div class="story-content" id="result-story"></div>
+            </div>
+
+            <button class="btn-secondary btn-new-analysis" id="new-analysis-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                Analyze Another Image
+            </button>
+        </section>
+
+        <!-- Error State -->
+        <div class="error-state" id="error-state" hidden>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3>Analysis Failed</h3>
+            <p id="error-message"></p>
+            <button class="btn-primary" id="retry-btn">Try Again</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
