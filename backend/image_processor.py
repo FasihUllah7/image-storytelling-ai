@@ -39,6 +39,12 @@ class ImageProcessor:
             try:
                 img = Image.open(file_data)
                 img.verify()
+                
+                # CRITICAL FIX: verify() consumes the image and leaves file pointer in invalid state
+                # We must reset the file pointer after verification
+                if hasattr(file_data, 'seek'):
+                    file_data.seek(0)
+                
                 return True, None
             except Exception as e:
                 return False, f"Invalid image format: {str(e)}"

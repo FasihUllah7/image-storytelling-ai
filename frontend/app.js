@@ -94,14 +94,20 @@ elements.tabBtns.forEach(btn => {
 });
 
 // ===== File Upload =====
-elements.browseBtn.addEventListener('click', () => {
+elements.browseBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent event bubbling to dropzone
+    console.log('Browse button clicked');
     elements.fileInput.click();
 });
 
 elements.fileInput.addEventListener('change', (e) => {
+    console.log('File input changed, files:', e.target.files);
     const file = e.target.files[0];
     if (file) {
+        console.log('File selected:', file.name, file.type, file.size);
         handleImageFile(file);
+    } else {
+        console.warn('No file selected');
     }
 });
 
@@ -127,8 +133,12 @@ elements.dropzone.addEventListener('drop', (e) => {
     }
 });
 
-elements.dropzone.addEventListener('click', () => {
-    elements.fileInput.click();
+elements.dropzone.addEventListener('click', (e) => {
+    // Only trigger if clicking the dropzone itself, not the browse button
+    if (e.target === elements.dropzone || e.target.closest('.dropzone') === elements.dropzone) {
+        console.log('Dropzone clicked');
+        elements.fileInput.click();
+    }
 });
 
 // ===== Camera Capture =====
@@ -183,17 +193,43 @@ function stopCamera() {
 
 // ===== Image Handling =====
 function handleImageFile(file) {
+    console.log('handleImageFile called with:', file);
+
+    if (!file) {
+        console.error('No file provided to handleImageFile');
+        return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        console.error('Invalid file type:', file.type);
+        showError('Please select a valid image file');
+        return;
+    }
+
     selectedImage = file;
+    console.log('Selected image set:', selectedImage.name);
 
     const reader = new FileReader();
+
     reader.onload = (e) => {
+        console.log('FileReader loaded successfully');
         elements.previewImg.src = e.target.result;
         elements.imagePreview.hidden = false;
 
         // Hide other states
         elements.resultsSection.hidden = true;
         elements.errorState.hidden = true;
+
+        console.log('Image preview should now be visible');
     };
+
+    reader.onerror = (e) => {
+        console.error('FileReader error:', e);
+        showError('Failed to read image file');
+    };
+
+    console.log('Starting to read file as DataURL');
     reader.readAsDataURL(file);
 }
 
